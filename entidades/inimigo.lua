@@ -1,6 +1,6 @@
 local enemy = {
-    forca = forca,
-    categoria = categoria
+    forca = 0,
+    categoria = ''
 }
 
 function enemy:novo(forca, categoria)
