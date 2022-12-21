@@ -1,52 +1,88 @@
-local player = {}
+player = {
+    vida = 200,
+    pots = {},
+    nome = '',
+}
 
-function player.novo(nome)
-    return {
-        vida = 200,
-        pots = {},
-        nome = nome
-    }
-end
 
-function player.obter_pocao(instancia, pocao)
-    table.insert(instancia.pots, pocao)
-end
+function player:novo(nome)
+    local obj = {}
+    setmetatable(obj, self)
+    obj.vida = 200
+    obj.pots = {}
+    obj.nome = nome
 
-function player.atacado(instancia, forca)
-    if player.vivo(instancia) then
-        instancia.vida = instancia.vida - forca
 
-        if player.vivo(instancia) then
-            print("Após o ataque, " .. instancia.nome .. " agora tem " .. instancia.vida .. " de vida!")
+    obj.vivo = function(self)
+        return self.vida > 0
+    end
+
+
+    obj.atacado = function(self, forca)
+        if self:vivo() then
+            self.vida = self.vida - forca
+
+            if self:vivo() then
+                print("Após o ataque, " .. self.nome .. " agora tem " .. self.vida .. " de vida!")
+            else
+                print("Após o ataque, " .. self.nome .. " morreu!")
+            end
         else
-            print("Após o ataque, " .. instancia.nome .. " morreu!")
+            print(self.nome .. " já está morto!")
         end
-    else
-        print(instancia.nome .. " já está morto!")
     end
+
+
+    obj.matar = function(self)
+        if self:vivo() then
+            self.vida = 0
+            print(self.nome .. " morreu!")
+        else
+            print(self.nome .. " já está morto!")
+        end
+    end
+
+
+
+    obj.obter_pocao = function(self, pocao)
+        return table.insert(self.pots, pocao)
+    end
+
+
+
+    obj.usar_pocao = function(self)
+        if #self.pots > 0 then
+            self.vida = self.vida + self.pots[1].vida
+            table.remove(self.pots, 1)
+            print(self.nome .. " usou uma poção e agora tem " .. self.vida .. " de vida!")
+        else
+            print(self.nome .. " não tem poções")
+        end
+    end
+
+
+
+    return obj
 end
 
-function player.matar(instancia)
-    if player.vivo(instancia) then
-        instancia.vida = 0
-        print(instancia.nome .. " morreu!")
-    else
-        print(instancia.nome .. " já está morto!")
-    end
-end
+-- function player:vivo()
+--     return self.vida > 0
+-- end
 
-function player.vivo(instancia)
-    return instancia.vida > 0
-end
+-- function player:atacado(forca)
+--     if self:vivo() then
+--         self.vida = self.vida - forca
 
-function player.usar_pocao(instancia)
-    if #instancia.pots > 0 then
-        instancia.vida = instancia.vida + instancia.pots[1].vida
-        table.remove(instancia.pots, 1)
-        print(instancia.nome .. " usou uma poção e agora tem " .. instancia.vida .. " de vida!")
-    else
-        print(instancia.nome .. " não tem poções")
-    end
-end
+--         if self:vivo() then
+--             print("Após o ataque, " .. self.nome .. " agora tem " .. self.vida .. " de vida!")
+--         else
+--             print("Após o ataque, " .. self.nome .. " morreu!")
+--         end
+--     else
+--         print(self.nome .. " já está morto!")
+--     end
+-- end
+
+--
 
 return player
